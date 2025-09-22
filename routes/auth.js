@@ -26,8 +26,9 @@ function salvar(usuarios) {
 const router = Router();
 const filePath = path.join(__dirname, '..', 'utils', 'db.json');
 
+const usuarios = lerArquivo();
+
 router.post("/cadastro", async (req, res) => {
-    const usuarios = lerArquivo();
 
     const {nome, email, senha} = req.body;
 
@@ -37,7 +38,7 @@ router.post("/cadastro", async (req, res) => {
         return res.status(400).json({ message: "Usuário já existe"});
     }
 
-    const senhaHash = await bcrypt.hash(password, 10);
+    const senhaHash = await bcrypt.hash(senha, 10);
     usuarios.push({nome, email, senha:senhaHash});
 
     salvar(usuarios);
@@ -46,8 +47,6 @@ router.post("/cadastro", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-    const usuarios = lerArquivo();
-
     const {nome, email, senha} = req.body;
 
     const usuario = usuarios.find((u) => u.nome === nome);
