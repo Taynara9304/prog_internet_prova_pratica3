@@ -24,7 +24,7 @@ function salvar(usuarios) {
 }
 
 const router = Router();
-const filePath = path.join(__dirname, '..', 'utils', 'db.json');
+const filePath = path.join(__dirname, '..', 'db.json');
 
 const usuarios = lerArquivo();
 
@@ -39,7 +39,8 @@ router.post("/cadastro", async (req, res) => {
     }
 
     const senhaHash = await bcrypt.hash(senha, 10);
-    usuarios.push({nome, email, senha:senhaHash});
+    
+    usuarios.push({id: usuarios.length + 1, nome, email, senha:senhaHash});
 
     salvar(usuarios);
 
@@ -47,19 +48,23 @@ router.post("/cadastro", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-    const {nome, email, senha} = req.body;
+    const {email, senha} = req.body;
 
-    const usuario = usuarios.find((u) => u.nome === nome);
-    if (usuario) {
+    const usuario = usuarios.find((u) => u.email === email);
+
+    if (!usuario) {
         return res.status(404).json({ message: "Usuário não encontrado" });
     }
 
     const senhaEValida = await bcrypt.compare(senha, usuario.senha);
+
     if (!senhaEValida) {
         return res.status(400).json({ message: "Senha inválida" });
     }
 
-    const token = jwt.sign((email), 'secreta123', {expiresIn:"1h"});
+    const tokenPayload = { email: usuario.email, senha: usuario.senha };
+    const token = jwt.sign(tokenPayload, "secreta123", { expiresIn: '1h' });
+  
     res.json({token});
 
     //Rota protegida

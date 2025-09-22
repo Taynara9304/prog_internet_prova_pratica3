@@ -1,5 +1,8 @@
-{
-    "nome": "Taynara",
-    "email": "taynara@gmail.com",
-    "senha": "taynara123"
-}
+[
+  {
+    "id": 1,
+    "nome": "Marilia da Silva",
+    "email": "marilia@gmail.com",
+    "senha": "marilia123"
+  }
+]
